@@ -25,6 +25,7 @@ namespace DbHelper {
 		IEnumerable<T> Select<T>(string sql, Func<IDictionary<string, object>, T> objectGetter);
 		IEnumerable<dynamic> SelectExpando(string sql);
 		void Insert(string table, object values);
+		bool Exists(string sql);
 	}
 
 	public interface IDbConnection {
@@ -59,22 +60,35 @@ namespace DbHelper {
 				_conn = conn;
 			}
 
-			public IEnumerable<IDictionary<string, object>> Select(string sql) {
+			private T ExecuteReader<T>(string sql, Func<SqlDataReader,T> func) {
 				using (var cmd = new SqlCommand(sql, _conn)) {
 					using (var rdr = cmd.ExecuteReader()) {
-						var fields = new string[rdr.FieldCount];
-						for (int i = 0; i < fields.Length; i++) {
-							fields[i] = rdr.GetName(i);
-						}
-						var result = new List<IDictionary<string, object>>();
-						while (rdr.Read()) {
-							var row = new Dictionary<string, object>();
-							fields.Each((i, v) => row[v] = rdr.GetValue(i));
-							result.Add(row);
-						}
-						return result;
+						return func(rdr);
 					}
 				}
+			}
+			private void ExecuteReader(string sql, Action<SqlDataReader> action) {
+				using (var cmd = new SqlCommand(sql, _conn)) {
+					using (var rdr = cmd.ExecuteReader()) {
+						action(rdr);
+					}
+				}
+			}
+
+			public IEnumerable<IDictionary<string, object>> Select(string sql) {
+				return ExecuteReader(sql, rdr => {
+				                   	var fields = new string[rdr.FieldCount];
+				                   	for (int i = 0; i < fields.Length; i++) {
+				                   		fields[i] = rdr.GetName(i);
+				                   	}
+				                   	var result = new List<IDictionary<string, object>>();
+				                   	while (rdr.Read()) {
+				                   		var row = new Dictionary<string, object>();
+				                   		fields.Each((i, v) => row[v] = rdr.GetValue(i));
+				                   		result.Add(row);
+				                   	}
+				                   	return result;
+				                   });
 			}
 
 			public IEnumerable<T> Select<T>(string sql, Func<IDictionary<string, object>, T> objectGetter) {
@@ -98,6 +112,10 @@ namespace DbHelper {
 					string text = "insert into " + table;
 					text += String.Join(",", values.GetType().GetFields(BindingFlags.Public).Select(fi => fi.Name));
 				}
+			}
+
+			public bool Exists(string sql) {
+				return ExecuteReader(sql, rdr => rdr.HasRows );
 			}
 		}
 	}

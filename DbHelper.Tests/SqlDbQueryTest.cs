@@ -12,6 +12,25 @@ namespace DbHelper.Tests
 	[TestClass]
 	public class SqlDbQueryTest
 	{
+		public static class QueryHelper {
+			public static IEnumerable<IDictionary<string,object>> ExecuteDic(string sql) {
+				var c = SqlConnectionFactory.Create(ConnStr);
+				IEnumerable<IDictionary<string,object>> result = null;
+				c.Query(q => {
+				        	result = q.Select(sql);
+				        });
+				return result;
+			}
+			public static IEnumerable<dynamic> Execute(string sql) {
+				var c = SqlConnectionFactory.Create(ConnStr);
+				IEnumerable<dynamic> result = null;
+				c.Query(q => {
+				        	result = q.SelectExpando(sql);
+				        });
+				return result;
+			}
+		}
+
 		public SqlDbQueryTest()
 		{
 			//
@@ -20,6 +39,9 @@ namespace DbHelper.Tests
 		}
 
 		private const string ConnStr = @"Data Source=localhost\sqlexpress;Initial Catalog=SandBox;Integrated Security=True";
+		private static IDbConnection GetConnection() {
+			return SqlConnectionFactory.Create(ConnStr);
+		}
 		private TestContext testContextInstance;
 
 		/// <summary>
@@ -93,6 +115,25 @@ namespace DbHelper.Tests
 			Assert.IsNotNull(row.Name);
 
 			Console.WriteLine(row.Name);
+		}
+
+		[TestMethod]
+		public void Expando_Handles_Unnamed_Columns() {
+			var result = QueryHelper.Execute("select count(*) from [Full]");
+
+			Assert.IsNotNull(result);
+			Assert.IsNotNull(result.First());
+		}
+
+		[TestMethod]
+		public void Dictionary_Handles_Unnamed_Columns() {
+			var result = QueryHelper.ExecuteDic("select count(*) from [Full]");
+
+			Assert.IsNotNull(result);
+			Assert.IsNotNull(result.First());
+
+			Console.WriteLine(result.First().Keys.First());
+			Console.WriteLine(result.First().Values.First());
 		}
 	}
 }

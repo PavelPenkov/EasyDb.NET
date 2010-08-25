@@ -21,6 +21,7 @@ namespace DbHelper {
 	}
 
 	public interface IDbQuery {
+		IEnumerable<IDictionary<string, object>> Select(string sql, object parameters);
 		IEnumerable<IDictionary<string, object>> Select(string sql);
 		IEnumerable<T> Select<T>(string sql, Func<IDictionary<string, object>, T> objectGetter);
 		IEnumerable<dynamic> SelectExpando(string sql);
@@ -30,6 +31,7 @@ namespace DbHelper {
 
 	public interface IDbConnection {
 		void Query(Action<IDbQuery> action);
+		T Query<T>(Func<IDbQuery, T> func);
 	}
 
 	public class SqlConnectionFactory {
@@ -50,6 +52,14 @@ namespace DbHelper {
 					var q = new SqlDbQuery(conn);
 					action(q);
 				}
+			}
+
+			public T Query<T>(Func<IDbQuery, T> func) {
+				T result = default(T);
+				Query((IDbQuery q) => {
+				      	result = func(q);
+				      });
+				return result;
 			}
 		}
 
@@ -75,7 +85,10 @@ namespace DbHelper {
 				}
 			}
 
-			public IEnumerable<IDictionary<string, object>> Select(string sql) {
+			public IEnumerable<IDictionary<string, object>> Select(string sql, object parameters) {
+				if (String.IsNullOrEmpty(sql)) throw new ArgumentNullException("sql");
+				if (parameters == null) throw new ArgumentNullException("parameters");
+
 				return ExecuteReader(sql, rdr => {
 				                   	var fields = new string[rdr.FieldCount];
 				                   	for (int i = 0; i < fields.Length; i++) {
@@ -89,6 +102,10 @@ namespace DbHelper {
 				                   	}
 				                   	return result;
 				                   });
+			}
+
+			public IEnumerable<IDictionary<string, object>> Select(string sql) {
+				return Select(sql, new object());
 			}
 
 			public IEnumerable<T> Select<T>(string sql, Func<IDictionary<string, object>, T> objectGetter) {

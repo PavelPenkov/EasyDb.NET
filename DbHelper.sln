@@ -1,0 +1,36 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DbHelper", "DbHelper\DbHelper.csproj", "{472685BF-5C4F-41EA-98DF-6A888A48007C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DbHelper.Tests", "DbHelper.Tests\DbHelper.Tests.csproj", "{822BC178-CA5C-41E2-8225-37FB7E8E52EE}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{A3807777-3819-4198-A0A0-1399F57BB808}"
+	ProjectSection(SolutionItems) = preProject
+		DbHelper.vsmdi = DbHelper.vsmdi
+		Local.testsettings = Local.testsettings
+		TraceAndTestImpact.testsettings = TraceAndTestImpact.testsettings
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(TestCaseManagementSettings) = postSolution
+		CategoryFile = DbHelper.vsmdi
+	EndGlobalSection
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{472685BF-5C4F-41EA-98DF-6A888A48007C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{472685BF-5C4F-41EA-98DF-6A888A48007C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{472685BF-5C4F-41EA-98DF-6A888A48007C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{472685BF-5C4F-41EA-98DF-6A888A48007C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{822BC178-CA5C-41E2-8225-37FB7E8E52EE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{822BC178-CA5C-41E2-8225-37FB7E8E52EE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{822BC178-CA5C-41E2-8225-37FB7E8E52EE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{822BC178-CA5C-41E2-8225-37FB7E8E52EE}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

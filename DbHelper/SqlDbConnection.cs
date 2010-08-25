@@ -24,7 +24,7 @@ namespace DbHelper {
 		IEnumerable<IDictionary<string, object>> Select(string sql);
 		IEnumerable<T> Select<T>(string sql, Func<IDictionary<string, object>, T> objectGetter);
 		IEnumerable<dynamic> SelectExpando(string sql);
-		void Insert(string table, object values);
+		void Insert(string into, object values);
 		bool Exists(string sql);
 	}
 
@@ -104,12 +104,12 @@ namespace DbHelper {
 
                 }
 
-			public void Insert(string table, object values) {
+			public void Insert(string @into, object values) {
 
 				using (var cmd = new SqlCommand()) {
 					cmd.Connection = _conn;
 					cmd.Parameters.AddRange(values.GetType().GetFields().Select(fi => new SqlParameter(fi.Name, fi.GetValue(values))).ToArray());
-					string text = "insert into " + table;
+					string text = "insert into " + into;
 					text += String.Join(",", values.GetType().GetFields(BindingFlags.Public).Select(fi => fi.Name));
 				}
 			}

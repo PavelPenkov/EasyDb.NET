@@ -7,39 +7,12 @@ using System.Reflection;
 using System.Text;
 
 namespace DbHelper {
-	public static class Extensions {
-		public static void Each<T>(this IEnumerable<T> source, Action<T> action) {
-			Each(source, (i, v) => action(v));
-		}
-		public static void Each<T>(this IEnumerable<T> source, Action<int, T> action) {
-			var e = source.GetEnumerator();
-			for (int i = 0; e.MoveNext(); i++) {
-				action(i, e.Current);
-			}
-		}
-
-	}
-
-	public interface IDbQuery {
-		IEnumerable<IDictionary<string, object>> Select(string sql, object parameters);
-		IEnumerable<IDictionary<string, object>> Select(string sql);
-		IEnumerable<T> Select<T>(string sql, Func<IDictionary<string, object>, T> objectGetter);
-		IEnumerable<dynamic> SelectExpando(string sql);
-		void Insert(string into, object values);
-		bool Exists(string sql);
-	}
-
-	public interface IDbConnection {
-		void Query(Action<IDbQuery> action);
-		T Query<T>(Func<IDbQuery, T> func);
-	}
-
 	public class SqlConnectionFactory {
 		public static IDbConnection Create(string connString) {
 			return new SqlDbConnection(connString);
 		}
 
-		private class SqlDbConnection : IDbConnection {
+		private partial class SqlDbConnection : IDbConnection {
 			private readonly string _connString;
 
 			public SqlDbConnection(string connString) {
@@ -56,14 +29,14 @@ namespace DbHelper {
 
 			public T Query<T>(Func<IDbQuery, T> func) {
 				T result = default(T);
-				Query((IDbQuery q) => {
+				Query(q => {
 				      	result = func(q);
 				      });
 				return result;
 			}
 		}
 
-		private class SqlDbQuery : IDbQuery {
+		private partial class SqlDbQuery : IDbQuery {
 			private readonly SqlConnection _conn;
 
 			public SqlDbQuery(SqlConnection conn) {
